@@ -77,7 +77,8 @@ FERRAMENTAS = [
 # passos (chamadas ao modelo) o agente pode dar por pergunta e implemente
 # deve_parar. Guarde esse número: ele vai para o ADR da equipe.
 # --------------------------------------------------------------------------
-MAX_PASSOS = None  # ex.: 6
+# Proposta: 1 - Classificar, 3 - Buscar arquivos, 1 - Responder ou Escalar. Total: 5 passos.
+MAX_PASSOS = 5  # ex.: 6
 
 
 def deve_parar(passos: int) -> bool:

@@ -120,8 +120,13 @@ python encontro-01/rodar.py --arq a
 **Observem:**
 
 - Quantas perguntas ela acertou? Em quais errou, e por quê?
+  - 9, errou 1 onde o resultado devia ser "não sei" e o modelo respondeu um valor.
 - Quantos tokens de entrada cada pergunta gasta? Estão na coluna `tokens_entrada` da planilha salva em `encontro-01/resultados/`.
+  - Em média 3230 tokens de entrada por pergunta.
 - O que aconteceria com essa arquitetura se a Aurora tivesse 5.000 documentos?
+  - Supondo que cada arquivo tivesse 250 tokens, 5k arquivos seria 1.250.000 tokens.
+  - Essa arquitetura perderia eficiencia, gastaria mais por interação e poderia demorar mais para responder.
+  - Gastaria a toa e geraria insatisfação do usuário.
 
 ### ⏱ 0:15–0:30 · Arquitetura B, workflow
 
