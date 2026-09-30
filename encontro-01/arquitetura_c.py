@@ -22,7 +22,9 @@ SISTEMA = REGRAS + """
 Você tem ferramentas. Busque nos documentos antes de responder; você pode
 buscar mais de uma vez e em temas diferentes. Se a pessoa pergunta se ela tem
 direito a um benefício, chame escalar_para_rh. Para terminar o atendimento,
-chame a ferramenta responder."""
+chame a ferramenta responder.
+Se a pessoa perguntar sobre valores de beneficios, busque nos documentos do tema 'rh' e 'beneficios'.
+"""
 
 # As ferramentas, no formato neutro do projeto (comum/modelo.py converte).
 # A descrição é o contrato que o modelo lê. Esse é o assunto do Encontro 2.
@@ -78,7 +80,7 @@ FERRAMENTAS = [
 # deve_parar. Guarde esse número: ele vai para o ADR da equipe.
 # --------------------------------------------------------------------------
 # Proposta: 1 - Classificar, 3 - Buscar arquivos, 1 - Responder ou Escalar. Total: 5 passos.
-MAX_PASSOS = 6  # ex.: 6
+MAX_PASSOS = 5  # ex.: 6
 
 
 def deve_parar(passos: int) -> bool:
@@ -116,6 +118,7 @@ def resolver(pergunta: str) -> Resultado:
         #   mensagens.append(modelo.mensagem_do_assistente(resposta))
         #   mensagens.append(modelo.mensagem_de_resultados(pares))
         # ------------------------------------------------------------------
+        pares = []
         for chamada in resposta.chamadas:
             if chamada.nome == "responder":
                 return Resultado.de_dict(chamada.args)
@@ -123,8 +126,9 @@ def resolver(pergunta: str) -> Resultado:
                 return Resultado("escalar", [], chamada.args.get("motivo", ""))
             else:
                 texto = executar(chamada)
-                mensagens.append(modelo.mensagem_do_assistente(resposta))
-                mensagens.append(modelo.mensagem_de_resultados([(chamada, texto)]))
+                pares.append((chamada, texto))
+        mensagens.append(modelo.mensagem_do_assistente(resposta))
+        mensagens.append(modelo.mensagem_de_resultados(pares))
 
     # Acabaram os passos sem resposta: sair escalando também é um desfecho projetado.
     return Resultado("escalar", [], f"Não consegui concluir em {passos} passos. Encaminhado ao RH.")
