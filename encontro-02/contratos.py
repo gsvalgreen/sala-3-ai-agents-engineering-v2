@@ -81,7 +81,8 @@ CONTRATOS = {
     "consultar_politica_rh": {
         "descricao": ("Busca nas políticas de RH na wiki da Aurora. "
                       "Use para dúvidas sobre férias, licenças, trabalho remoto, jornada, integração e políticas gerais. "
-                      "Devolve até 2 páginas com o id da página (para citar como fonte) e o trecho relevante. "
+                      "Devolve até 2 páginas com o `id` das páginas (para citar como fonte) e o `trecho` relevante. "
+                      "Somente cite informações que encontrar nas páginas de documentos."
                       "(\"integracao\" é o guia de boas-vindas; \"geral\" busca em todas as políticas)"),
         "parametros": {  # JSON Schema da entrada
             "type": "object",
