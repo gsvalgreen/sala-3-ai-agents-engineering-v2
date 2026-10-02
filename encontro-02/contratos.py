@@ -79,9 +79,22 @@ CONTRATOS = {
     # Sem o id na saída, o agente consegue citar a fonte?
     # ==================================================================
     "consultar_politica_rh": {
-        "descricao": "TODO 1",
-        "parametros": None,
-        "saida": None,
+        "descricao": ("Busca nas políticas de RH na wiki da Aurora. "
+                      "Use para dúvidas sobre férias, licenças, trabalho remoto, jornada, integração e políticas gerais. "
+                      "Devolve até 2 páginas com o id da página (para citar como fonte) e o trecho relevante. "
+                      "(\"integracao\" é o guia de boas-vindas; \"geral\" busca em todas as políticas)"),
+        "parametros": {  # JSON Schema da entrada
+            "type": "object",
+            "properties": {
+                "pergunta": {"type": "string", "maxLength": 300, "description": "..."},
+                "tema": {"type": "string",
+                         "enum": ["ferias", "trabalho_remoto", "licencas", "jornada", "integracao", "geral"],
+                         "description": "..."}},
+            "required": ["pergunta"],
+            "additionalProperties": False,
+        },
+        "saida": ["id", "titulo", "tema", "dono", "atualizado_em", "trecho", "texto_completo", "caminho", "permissoes",
+                  "tags", "revisoes"],
     },
 
     # ==================================================================
@@ -99,9 +112,24 @@ CONTRATOS = {
     # precisa saber do chamado aberto?
     # ==================================================================
     "abrir_chamado_ti": {
-        "descricao": "TODO 2",
-        "parametros": None,
-        "saida": None,
+        "descricao": ("Cria um chamado no service desk de TI. "
+                      "Use quando a dúvida do colaborador não puder ser resolvida com a base de conhecimento de TI ou quando o colaborador solicitar ajuda. "
+                      "Devolve o id do chamado, status, prazo de atendimento, grupo_resolvedor e prazo_atendimento."),
+        "parametros": {
+            "type": "object",
+            "properties": {
+                "categoria": {"type": "string", "enum": ["equipamento", "acesso", "software", "vpn", "outro"],
+                              "description": "..."},
+                "descricao": {"type": "string", "minLength": 15, "maxLength": 500,
+                              "description": "..."},
+                "urgencia": {"type": "string", "enum": ["baixa", "media", "alta"], "default": "media",
+                             "description": "..."},
+            },
+            "required": ["categoria", "descricao"],
+            "additionalProperties": False,
+        },
+        "saida": ["id", "status", "categoria", "urgencia", "descricao", "prazo_atendimento", "grupo_resolvedor",
+                  "fila_interna", "sla_interno_min", "historico", "chave_idempotencia"],
     },
 
     # ==================================================================
@@ -119,19 +147,30 @@ CONTRATOS = {
     # Em que se diferencia de consultar_regra_beneficio?
     # ==================================================================
     "verificar_elegibilidade_beneficio": {
-        "descricao": "TODO 3",
-        "parametros": None,
-        "saida": None,
+        "descricao": ("Lê o cadastro do colaborador no sistema de RH e faz uma PRÉ-ANÁLISE automática. "
+                      "Use para saber se um colaborador específico tem direito a um dos benefícios disponíveis."
+                      "Devolve o resultado da pré-análise, com os critérios verificados e um aviso de que só o RH confirma a elegibilidade."),
+        "parametros": {
+            "type": "object",
+            "properties": {
+                "colaborador_id": {"type": "string", "pattern": "^[0-9]+$", "description": "..."},
+                "beneficio": {"type": "string", "enum": ["vale_refeicao", "plano_de_saude", "auxilio_creche"],
+                              "description": "..."},
+            },
+            "required": ["colaborador_id", "beneficio"],
+            "additionalProperties": False,
+        },
+        "saida": ["colaborador_id", "nome", "regime", "admissao", "dependentes", "beneficios_ativos",
+                  "beneficio", "pre_analise", "criterios_verificados", "aviso"],
     },
 }
-
 
 # ======================================================================
 # TODO 4 — a sexta ferramenta é construída do zero em nova_ferramenta.py
 # (contrato E implementação). Quando o contrato de lá estiver preenchido,
 # ela entra neste catálogo sozinha. Não precisa mexer aqui.
 # ======================================================================
-import nova_ferramenta as _nova   # noqa: E402
+import nova_ferramenta as _nova  # noqa: E402
 
 if _nova.CONTRATO.get("parametros") is not None:
     CONTRATOS[_nova.NOME] = _nova.CONTRATO
