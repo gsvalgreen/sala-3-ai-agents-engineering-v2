@@ -57,7 +57,7 @@ Perguntas para decidir
 """
 import unicodedata
 
-from ferramentas import ErroDeFerramenta   # para devolver erros legíveis ao modelo (veja ferramentas.py)
+from ferramentas import ErroDeFerramenta  # para devolver erros legíveis ao modelo (veja ferramentas.py)
 from sistemas import PlanilhaGoogle
 
 SHEETS = PlanilhaGoogle()
@@ -81,23 +81,64 @@ def normalizar(texto: str) -> str:
 #   3. filtrar (normalizar() ajuda)
 #   4. devolver {"resultados": [...], ...}
 # ======================================================================
-def consultar_rede_credenciada(cidade: str) -> dict:
-    raise NotImplementedError("TODO 4a: implemente consultar_rede_credenciada em nova_ferramenta.py")
+def consultar_rede_credenciada(cidade: str, tipo: str, especialidade: str = "", atende_24_horas: str = "") -> dict:
+    planilha = SHEETS.ler(PLANILHA_ID, ABA)
+    cabecalho = planilha['values'][0]
+    linhas = planilha['values'][1:]
+    resultados = []
+    for linha_valor in linhas:
+        registro = {"id": f"{PLANILHA_ID}"}
+        for i, coluna in enumerate(cabecalho):
+            if coluna == "cidade":
+                registro[coluna] = normalizar(linha_valor[i])
+            else:
+                registro[coluna] = linha_valor[i]
+        resultados.append(registro)
+
+    resultados = [r for r in resultados if r["cidade"] == normalizar(cidade) and
+                  (tipo is None or normalizar(r["tipo"]) == normalizar(tipo))
+                  and (
+                          especialidade == ""
+                          or normalizar(especialidade) in normalizar(r["especialidades"].split(";").strip())
+                  )
+                  and (
+                          normalizar(atende_24_horas) in {"", "nao", "não"}
+                          or normalizar(r["atende_24h"]) in {"sim", "true", "1"}
+                  )
+                  and (
+                          normalizar(r["situacao"]) == "ativo"
+                  )]
+    return {"resultados": resultados, "fonte": f"{PLANILHA_ID}"}
 
 
 # ======================================================================
 # TODO 4b — o contrato (mesmo formato de contratos.py)
 # ======================================================================
 CONTRATO = {
-    "descricao": "TODO 4",
-    "parametros": None,
-    "saida": None,
+    "descricao": (
+        "Busca prestadores de saúde credenciados pelo plano de saúde da empresa, filtrando por cidade, tipo, especialidade e "
+        "se tem atendimento 24 horas. "
+        "Responda com a lista de prestadores ativos na cidade informada e o id da planilha usada como fonte, limitando a 10 resultados. "
+        "A resposta deve incluir a fonte da planilha, o nome do prestador, tipo, especialidades, cidade, UF, bairro, telefone e se atende 24 horas. "
+        "Use o desfecho `responder` quando encontrar prestadores e inclua o campo `id` como fonte para identificar a planilha, ou `nao_sei` se não encontrar nenhum prestador. "),
+    "parametros": {
+        "type": "object",
+        "properties": {
+            "cidade": {"type": "string", "description": "Cidade para buscar prestadores"},
+            "tipo": {"type": "string", "description": "Tipo de prestador (Hospital, Laboratório, Clínica)"},
+            "especialidade": {"type": "string", "description": "Especialidade médica desejada"},
+            "atende_24_horas": {"type": "string",
+                                "description": "Se deve filtrar apenas prestadores que atendem 24 horas ('sim' ou 'não')"},
+        },
+        "required": ["cidade"],
+        "additionalProperties": False
+    },
+    "saida": ["fonte", "id", "prestador", "tipo", "especialidades", "cidade", "uf", "bairro", "telefone", "atende_24h",
+              "situacao"],
 }
-
 
 NOME = "consultar_rede_credenciada"
 
-
-if __name__ == "__main__":   # olhar os dados antes de escrever a ferramenta
+if __name__ == "__main__":  # olhar os dados antes de escrever a ferramenta
     for linha in SHEETS.ler(PLANILHA_ID, ABA)["values"]:
         print(linha)

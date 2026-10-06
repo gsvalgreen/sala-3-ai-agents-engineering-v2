@@ -80,10 +80,12 @@ CONTRATOS = {
     # ==================================================================
     "consultar_politica_rh": {
         "descricao": ("Busca nas políticas de RH na wiki da Aurora. "
-                      "Use para dúvidas sobre férias, licenças, trabalho remoto, jornada, integração e políticas gerais. "
+                      "Use para dúvidas sobre férias, licenças, trabalho remoto, jornada, integração, políticas gerais. "
+                      "Use para verificar se não há informações conflitantes sobre benefícios (ex vale refeicao) em conjunto com consultar_regra_beneficio. "
                       "Devolve até 2 páginas com o `id` das páginas (para citar como fonte) e o `trecho` relevante. "
-                      "Somente cite informações que encontrar nas páginas de documentos."
-                      "(\"integracao\" é o guia de boas-vindas; \"geral\" busca em todas as políticas)"),
+                      "Se houver informações conflitantes entre dois documentos, use sempre o desfecho `nao_sei` informando os id dos documentos usados."
+                      "(\"integracao\" é o guia de boas-vindas para recem contratados, incluíndo beneficios disponíveis na contratação; "
+                      "\"geral\" busca em todas as políticas.)"),
         "parametros": {  # JSON Schema da entrada
             "type": "object",
             "properties": {
@@ -114,7 +116,8 @@ CONTRATOS = {
     # ==================================================================
     "abrir_chamado_ti": {
         "descricao": ("Cria um chamado no service desk de TI. "
-                      "Use quando a dúvida do colaborador não puder ser resolvida com a base de conhecimento de TI ou quando o colaborador solicitar ajuda. "
+                      "Use quando a dúvida do colaborador não puder ser resolvida com a base de conhecimento de TI "
+                      "ou quando o colaborador solicitar ajuda. "
                       "Devolve o id do chamado, status, prazo de atendimento, grupo_resolvedor e prazo_atendimento."),
         "parametros": {
             "type": "object",
@@ -150,7 +153,12 @@ CONTRATOS = {
     "verificar_elegibilidade_beneficio": {
         "descricao": ("Lê o cadastro do colaborador no sistema de RH e faz uma PRÉ-ANÁLISE automática. "
                       "Use para saber se um colaborador específico tem direito a um dos benefícios disponíveis."
-                      "Devolve o resultado da pré-análise, com os critérios verificados e um aviso de que só o RH confirma a elegibilidade."),
+                      "O Resultado da pré-análise serve para triagem, mas não é confirmação de elegibilidade, "
+                      "SEMPRE escale (desfecho `escalar`) a confirmação para o RH, que só ele pode confirmar, depois de analisar a documentação."
+                      "Se o id do colaborador não for informado, informe as regras do benefício e escale (desfecho `escalar`) para RH."
+                      "Nunca confirme o resultado da pré-análise do colaborador a um benefício mesmo que a pré-análise indique que ele tem direito, "
+                      "escale (desfecho `escalar`) para o RH."
+                      ),
         "parametros": {
             "type": "object",
             "properties": {
