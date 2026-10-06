@@ -1,0 +1,18 @@
+[
+  {"id": "N1", "categoria": "normal", "pergunta": "Quantos dias de licença-paternidade eu tenho?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["rh-licencas"]}, "resposta_contem_algum": ["20 dias", "vinte dias"]},
+  {"id": "N2", "categoria": "normal", "pergunta": "Com quanta antecedência preciso pedir minhas férias?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["rh-ferias"]}, "resposta_contem_algum": ["30 dias", "trinta dias"]},
+  {"id": "N4", "categoria": "normal", "pergunta": "Em quanto tempo a TI conserta ou repõe um notebook quebrado?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["ti-equipamentos"]}, "resposta_contem_algum": ["5 dias úteis", "cinco dias úteis"]},
+  {"id": "N7", "categoria": "normal", "pergunta": "Quantas sessões de terapia a empresa paga?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["beneficios-bem-estar"]}, "resposta_contem_algum": ["8 sessões", "oito sessões"]},
+  {"id": "E1", "categoria": "excecao", "pergunta": "Qual o limite diário de alimentação numa viagem com pernoite em Brasília?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["fin-viagens-e-reembolso"]}, "resposta_contem_algum": ["160"]},
+  {"id": "E2", "categoria": "excecao", "pergunta": "Até quanto posso gastar por dia com comida numa viagem a trabalho para São Paulo?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["fin-viagens-e-reembolso"]}, "resposta_contem_algum": ["160"]},
+  {"id": "C1", "categoria": "conflito", "pergunta": "Quantos dias de home office posso fazer por semana?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["rh-trabalho-remoto"]}, "resposta_contem_algum": ["3 dias", "três dias"], "resposta_nao_contem": ["2 dias", "dois dias"]},
+  {"id": "C2", "categoria": "conflito", "pergunta": "Qual o valor do auxílio home office?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["rh-trabalho-remoto"]}, "resposta_contem_algum": ["120"], "resposta_nao_contem": ["R$ 80"]},
+  {"id": "T1", "categoria": "termo-exato", "pergunta": "Estou com o erro 809 na VPN, o que eu faço?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["ti-vpn-codigos-de-erro"]}, "resposta_contem_algum": ["TCP 443"]},
+  {"id": "T2", "categoria": "termo-exato", "pergunta": "Qual o reembolso de consulta fora da rede na categoria AUR-S2?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["beneficios-plano-de-saude"]}, "resposta_contem_algum": ["150"], "resposta_nao_contem": ["300"]},
+  {"id": "A1", "categoria": "autoridade", "pergunta": "Qual é o valor do vale-refeição por dia?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": ["beneficios-vale-refeicao"]}, "resposta_contem_algum": ["45"]},
+  {"id": "S1", "categoria": "sem-resposta", "pergunta": "A Aurora oferece previdência privada?", "esperado": {"desfecho": "nao_sei", "fontes_obrigatorias": []}},
+  {"id": "S2", "categoria": "sem-resposta", "pergunta": "Qual é a política de estacionamento do escritório?", "esperado": {"desfecho": "nao_sei", "fontes_obrigatorias": []}},
+  {"id": "X1", "categoria": "escalar", "pergunta": "Tenho um filho de 4 anos. Tenho direito ao auxílio-creche?", "esperado": {"desfecho": "escalar", "fontes_obrigatorias": []}},
+  {"id": "P1", "categoria": "sem-busca", "pergunta": "Bom dia! Você consegue me ajudar com dúvidas de RH e TI?", "esperado": {"desfecho": "responder", "fontes_obrigatorias": []}},
+  {"id": "P2", "categoria": "sem-busca", "pergunta": "Obrigado, era isso mesmo que eu precisava!", "esperado": {"desfecho": "responder", "fontes_obrigatorias": []}}
+]

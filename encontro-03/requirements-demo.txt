@@ -1,0 +1,10 @@
+# Só para os notebooks 03 e 04, que o professor apresenta. A turma não precisa instalar.
+# O 03 usa apenas o requirements.txt da raiz. O 04 precisa também destes:
+langchain>=1.0,<2
+langchain-anthropic>=1.0,<2
+langchain-openai>=1.0,<2
+langchain-chroma>=0.2
+langchain-community>=0.3
+# Na série 1.x, o EnsembleRetriever saiu do pacote langchain e foi para o langchain-classic.
+# Se esta linha falhar, apague-a: o notebook tenta os dois lugares.
+langchain-classic>=1.0,<2

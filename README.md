@@ -31,8 +31,8 @@ Duas ideias guiam as seis aulas:
 | Encontro | Tema | Pergunta do dia | Entrega da equipe | Pasta |
 |---|---|---|---|---|
 | 1 | Do workflow ao agente | Este problema precisa de um agente? | Agent Decision Record | `encontro-01/` ✅ |
-| 2 | Contexto e ferramentas | Que contrato o agente precisa? | Tool Contract Sheet | em breve |
-| 3 | Recuperação como ferramenta | O que muda quando o agente decide se e quando buscar? | Agente com busca + nota de chunking | em breve |
+| 2 | Contexto e ferramentas | Que contrato o agente precisa? | Tool Contract Sheet | `encontro-02/` ✅ |
+| 3 | Recuperação como ferramenta | O que muda quando o agente decide se e quando buscar? | Nota de chunking (a busca entra no agente no Encontro 4) | `encontro-03/` ✅ |
 | 4 | Padrões e multi-agentes | Quando dividir melhora, e quando só encarece? | Diagrama de arquitetura + medição | em breve |
 | 5 | Evals, observabilidade e custo | Como ganhar confiança para dar deploy? | Suíte de avaliação + painel | em breve |
 | 6 | Segurança, governança e produção | O que precisa ser verdade para ir à produção? | Análise de riscos + pitch | em breve |
@@ -124,6 +124,8 @@ ai-agents-engineering/
 │   └── avaliar.py              compara a resposta com o gabarito
 │
 ├── encontro-01/                exercícios do Encontro 1 (tem README próprio)
+├── encontro-02/                exercícios do Encontro 2
+├── encontro-03/                notebooks do Encontro 3: busca, chunking e a wiki ampliada
 │
 └── referencia/
     └── langchain-basico.ipynb  apoio: os conceitos do Encontro 1 escritos em LangChain

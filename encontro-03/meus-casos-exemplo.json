@@ -1,0 +1,9 @@
+[
+  {"id": "M1", "categoria": "normal", "pergunta": "Em quantos dias posso devolver um produto?",
+   "trecho_esperado": "30 dias corridos", "resposta_esperada": "Até 30 dias corridos após o recebimento."},
+  {"id": "M2", "categoria": "excecao", "pergunta": "Posso devolver uma caneca personalizada?",
+   "trecho_esperado": "Produtos personalizados não podem ser devolvidos", "trechos_enganosos": ["em até 30 dias corridos"],
+   "resposta_esperada": "Não, salvo defeito de fabricação."},
+  {"id": "M3", "categoria": "sem-resposta", "pergunta": "Vocês aceitam devolução em loja física?",
+   "trecho_esperado": null, "resposta_esperada": "Não sei: a política não fala de loja física."}
+]
