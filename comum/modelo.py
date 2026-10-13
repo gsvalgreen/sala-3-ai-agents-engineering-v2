@@ -19,12 +19,24 @@ Provedores disponíveis (variável PROVEDOR no .env):
 O histórico da conversa fica sempre no formato da Anthropic (blocos tool_use e
 tool_result). O adaptador openai_compat traduz na ida e na volta, então o resto do
 projeto não sabe qual provedor está por trás.
+
+Replay (a partir do Encontro 4)
+    replay(arquivo, "gravar")  cada resposta nova do modelo é guardada no arquivo
+    replay(arquivo, "usar")    a mesma pergunta, com o mesmo histórico e as mesmas
+                               ferramentas, devolve a resposta guardada, sem chamar a
+                               API e sem custo. O placar mostra os tokens e o custo que
+                               a chamada teve quando foi gravada.
+    replay(None)               desliga
+
+Assim a turma roda o hands-on sem chave: o professor grava uma vez, todos reproduzem.
 """
+import hashlib
 import json
 import os
 import re
 import time
 from dataclasses import dataclass
+from pathlib import Path
 
 from comum import medidor
 
@@ -47,22 +59,55 @@ class Resposta:
     conteudo: list    # a resposta no formato do provedor, para voltar ao histórico
 
 
+class RespostaNaoGravada(RuntimeError):
+    """No modo replay "usar", a chamada não está na gravação e não há chave para chamar a API."""
+
+
 # ---------------------------------------------------------------- interface
 
 def chamar(mensagens: list, sistema: str = "", ferramentas: list | None = None,
-           max_tokens: int = 1024) -> Resposta:
+           max_tokens: int = 1024, exigir_ferramenta: bool | str = False) -> Resposta:
     """Envia a conversa ao modelo e devolve a resposta.
 
     ferramentas: lista de dicts no formato neutro do projeto:
         {"nome": ..., "descricao": ..., "parametros": <JSON Schema>}
+    exigir_ferramenta: False (o modelo escolhe entre texto e ferramenta), True (precisa
+        chamar alguma ferramenta) ou o nome de uma ferramenta (precisa chamar essa).
+        É o tool_choice da API: a garantia vem do provedor, não de uma frase no prompt.
     """
-    if PROVEDOR == "anthropic":
-        return _chamar_anthropic(mensagens, sistema, ferramentas, max_tokens)
-    if PROVEDOR == "openai_compat":
-        return _chamar_openai_compat(mensagens, sistema, ferramentas, max_tokens)
-    if PROVEDOR == "fake":
-        return _chamar_fake(mensagens, sistema, ferramentas)
-    raise ValueError(f"PROVEDOR desconhecido no .env: '{PROVEDOR}'. Use 'anthropic', 'openai_compat' ou 'fake'.")
+    if exigir_ferramenta and not ferramentas:
+        raise ValueError("exigir_ferramenta precisa de ferramentas")
+
+    chave = None
+    if _replay["modo"]:
+        chave = _chave(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta)
+        gravada = _replay["respostas"].get(chave)
+        if gravada is not None:
+            _replay["reproduzidas"] += 1
+            uso = gravada["uso"]
+            medidor.registrar(uso["entrada"], uso["saida"], uso["segundos"])
+            return _resposta_de_dict(gravada["resposta"])
+        _replay["faltando"] += 1
+        if _replay["modo"] == "usar" and not tem_credencial():
+            raise RespostaNaoGravada(
+                "Esta chamada não está na gravação, e não há chave de API configurada para fazê-la ao vivo.\n"
+                "Isso acontece quando você muda algo que o modelo lê (um prompt, a descrição de um "
+                "especialista, uma pergunta nova) ou escolhe uma opção fora do menu do notebook.\n"
+                "Volte a configuração para uma das opções do menu, ou configure a chave (README do encontro).")
+
+    antes = (medidor.atual().tokens_entrada, medidor.atual().tokens_saida, medidor.atual().segundos_no_modelo)
+    resposta = _chamar_provedor(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta)
+
+    if _replay["modo"] == "gravar":
+        depois = medidor.atual()
+        uso = {"entrada": depois.tokens_entrada - antes[0], "saida": depois.tokens_saida - antes[1],
+               "segundos": round(depois.segundos_no_modelo - antes[2], 3)}
+        registro = {"chave": chave, "resposta": _resposta_para_dict(resposta), "uso": uso}
+        _replay["respostas"][chave] = registro
+        with open(_replay["arquivo"], "a", encoding="utf-8") as f:
+            f.write(json.dumps(registro, ensure_ascii=False) + "\n")
+        _replay["gravadas"] += 1
+    return resposta
 
 
 def mensagem_do_usuario(texto: str) -> dict:
@@ -84,12 +129,105 @@ def mensagem_de_resultados(pares: list) -> dict:
     }
 
 
+def tem_credencial() -> bool:
+    """Há como chamar a API de verdade com a configuração atual?"""
+    if PROVEDOR == "anthropic":
+        return os.getenv("ANTHROPIC_API_KEY", "").strip().startswith("sk-")
+    if PROVEDOR == "openai_compat":
+        return bool(os.getenv("BASE_URL", "").strip() and os.getenv("API_KEY", "").strip())
+    return PROVEDOR == "fake"
+
+
+def _chamar_provedor(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta) -> Resposta:
+    if PROVEDOR == "anthropic":
+        return _chamar_anthropic(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta)
+    if PROVEDOR == "openai_compat":
+        return _chamar_openai_compat(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta)
+    if PROVEDOR == "fake":
+        return _chamar_fake(mensagens, sistema, ferramentas, exigir_ferramenta)
+    raise ValueError(f"PROVEDOR desconhecido no .env: '{PROVEDOR}'. Use 'anthropic', 'openai_compat' ou 'fake'.")
+
+
+# ---------------------------------------------------------------- replay
+
+_replay = {"modo": None, "arquivo": None, "respostas": {}, "cabecalho": {},
+           "reproduzidas": 0, "faltando": 0, "gravadas": 0}
+
+
+def replay(arquivo: str | Path | None, modo: str = "usar") -> dict:
+    """Liga o replay. modo "usar" reproduz; "gravar" reproduz o que já existe e grava o que falta.
+
+    No modo "usar", o preço por token do placar passa a ser o da gravação, para que o custo
+    mostrado seja o que a chamada custou de verdade, com o modelo que a respondeu.
+    Devolve o cabeçalho da gravação (provedor, modelo, preços, data).
+    """
+    _replay.update(modo=None, arquivo=None, respostas={}, cabecalho={}, reproduzidas=0, faltando=0, gravadas=0)
+    if arquivo is None:
+        return {}
+    if modo not in ("usar", "gravar"):
+        raise ValueError('modo deve ser "usar" ou "gravar"')
+    arquivo = Path(arquivo)
+    cabecalho = {}
+    if arquivo.exists():
+        with open(arquivo, encoding="utf-8") as f:
+            for linha in f:
+                if not linha.strip():
+                    continue
+                dado = json.loads(linha)
+                if "_cabecalho" in dado:
+                    cabecalho = dado["_cabecalho"]
+                else:
+                    _replay["respostas"][dado["chave"]] = dado
+    if modo == "usar":
+        if not arquivo.exists():
+            raise FileNotFoundError(f"Gravação não encontrada: {arquivo}. O professor precisa rodar o gravar_replay.py.")
+        if cabecalho:
+            medidor.PRECO_ENTRADA = cabecalho.get("preco_entrada", medidor.PRECO_ENTRADA)
+            medidor.PRECO_SAIDA = cabecalho.get("preco_saida", medidor.PRECO_SAIDA)
+    else:
+        if cabecalho and (cabecalho.get("modelo"), cabecalho.get("provedor")) != (MODELO, PROVEDOR):
+            raise ValueError(f"{arquivo.name} foi gravado com {cabecalho.get('modelo')} ({cabecalho.get('provedor')}) "
+                             f"e o .env está com {MODELO} ({PROVEDOR}). Não misture modelos numa gravação: "
+                             "use outro arquivo ou apague este.")
+        if not cabecalho:
+            cabecalho = {"provedor": PROVEDOR, "modelo": MODELO, "preco_entrada": medidor.PRECO_ENTRADA,
+                         "preco_saida": medidor.PRECO_SAIDA, "temperatura": os.getenv("TEMPERATURA", ""),
+                         "criado_em": time.strftime("%Y-%m-%d %H:%M")}
+            arquivo.parent.mkdir(parents=True, exist_ok=True)
+            with open(arquivo, "w", encoding="utf-8") as f:
+                f.write(json.dumps({"_cabecalho": cabecalho}, ensure_ascii=False) + "\n")
+    _replay.update(modo=modo, arquivo=arquivo, cabecalho=cabecalho)
+    return cabecalho
+
+
+def estado_replay() -> dict:
+    """Quantas chamadas vieram da gravação, quantas faltaram e quantas foram gravadas agora."""
+    return {k: _replay[k] for k in ("modo", "reproduzidas", "faltando", "gravadas")} | \
+           {"respostas_no_arquivo": len(_replay["respostas"]), "modelo": _replay["cabecalho"].get("modelo")}
+
+
+def _chave(mensagens, sistema, ferramentas, max_tokens, exigir) -> str:
+    """Impressão digital da chamada: tudo o que o modelo lê, menos o nome do modelo."""
+    bruto = json.dumps({"m": mensagens, "s": sistema, "f": ferramentas or [], "t": max_tokens, "e": exigir},
+                       ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(bruto.encode()).hexdigest()[:32]
+
+
+def _resposta_para_dict(r: Resposta) -> dict:
+    return {"texto": r.texto, "chamadas": [{"id": c.id, "nome": c.nome, "args": c.args} for c in r.chamadas],
+            "conteudo": r.conteudo}
+
+
+def _resposta_de_dict(d: dict) -> Resposta:
+    return Resposta(d["texto"], [Chamada(c["id"], c["nome"], c["args"]) for c in d["chamadas"]], d["conteudo"])
+
+
 # ---------------------------------------------------------------- anthropic
 
 _cliente = None
 
 
-def _chamar_anthropic(mensagens, sistema, ferramentas, max_tokens) -> Resposta:
+def _chamar_anthropic(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta=False) -> Resposta:
     global _cliente
     import anthropic
 
@@ -104,6 +242,10 @@ def _chamar_anthropic(mensagens, sistema, ferramentas, max_tokens) -> Resposta:
             {"name": f["nome"], "description": f["descricao"], "input_schema": f["parametros"]}
             for f in ferramentas
         ]
+        if exigir_ferramenta is True:
+            pedido["tool_choice"] = {"type": "any"}
+        elif exigir_ferramenta:
+            pedido["tool_choice"] = {"type": "tool", "name": exigir_ferramenta}
     if os.getenv("TEMPERATURA"):
         pedido["temperature"] = float(os.environ["TEMPERATURA"])
 
@@ -150,17 +292,31 @@ def _para_openai(mensagens: list, sistema: str) -> list:
     return saida
 
 
-def _pedido_openai(mensagens, sistema, ferramentas, max_tokens) -> dict:
+def _pedido_openai(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta=False) -> dict:
     pedido = {"model": MODELO, "max_tokens": max_tokens, "messages": _para_openai(mensagens, sistema)}
     if ferramentas:
         pedido["tools"] = [{"type": "function", "function": {"name": f["nome"], "description": f["descricao"],
                                                              "parameters": f["parametros"]}}
                            for f in ferramentas]
+        if exigir_ferramenta is True:
+            pedido["tool_choice"] = "required"
+        elif exigir_ferramenta:
+            pedido["tool_choice"] = {"type": "function", "function": {"name": exigir_ferramenta}}
     if os.getenv("TEMPERATURA"):
         pedido["temperature"] = float(os.environ["TEMPERATURA"])
     if "openrouter.ai" in os.getenv("BASE_URL", ""):
         # Só provedores que não guardam nem usam o conteúdo. Mude no .env por sua conta e risco.
-        pedido["provider"] = {"data_collection": os.getenv("OPENROUTER_DATA_COLLECTION", "deny")}
+        preferencias = {"data_collection": os.getenv("OPENROUTER_DATA_COLLECTION", "deny")}
+        # O mesmo modelo é servido por vários provedores, com preços muito diferentes.
+        # "price" escolhe o mais barato; deixe OPENROUTER_ORDENAR vazio para o roteamento padrão.
+        ordenar = os.getenv("OPENROUTER_ORDENAR", "price").strip()
+        if ordenar:
+            preferencias["sort"] = ordenar
+        if ferramentas:
+            # Só provedores que aceitam tools e tool_choice: sem isso, um provedor barato pode
+            # ignorar a ferramenta exigida e o agente quebra o contrato de saída.
+            preferencias["require_parameters"] = True
+        pedido["provider"] = preferencias
     return pedido
 
 
@@ -181,7 +337,7 @@ def _de_openai(dados: dict) -> Resposta:
     return Resposta(texto, chamadas, conteudo)
 
 
-def _chamar_openai_compat(mensagens, sistema, ferramentas, max_tokens) -> Resposta:
+def _chamar_openai_compat(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta=False) -> Resposta:
     import urllib.error
     import urllib.request
 
@@ -189,16 +345,27 @@ def _chamar_openai_compat(mensagens, sistema, ferramentas, max_tokens) -> Respos
     chave = os.getenv("API_KEY", "").strip()
     if not base or not chave:
         raise RuntimeError("PROVEDOR=openai_compat precisa de BASE_URL e API_KEY no .env")
-    corpo = json.dumps(_pedido_openai(mensagens, sistema, ferramentas, max_tokens)).encode()
-    pedido = urllib.request.Request(f"{base}/chat/completions", data=corpo, method="POST",
-                                    headers={"Authorization": f"Bearer {chave}",
-                                             "Content-Type": "application/json"})
+    corpo = json.dumps(_pedido_openai(mensagens, sistema, ferramentas, max_tokens, exigir_ferramenta)).encode()
     inicio = time.perf_counter()
-    try:
-        with urllib.request.urlopen(pedido, timeout=120) as r:
-            dados = json.loads(r.read().decode())
-    except urllib.error.HTTPError as e:
-        raise RuntimeError(f"{base} respondeu {e.code}: {e.read().decode()[:500]}") from None
+    for tentativa in range(4):           # limite de taxa e instabilidade passageira: espera e tenta de novo
+        pedido = urllib.request.Request(f"{base}/chat/completions", data=corpo, method="POST",
+                                        headers={"Authorization": f"Bearer {chave}",
+                                                 "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(pedido, timeout=120) as r:
+                dados = json.loads(r.read().decode())
+            if "choices" in dados:
+                break
+            erro = RuntimeError(f"{base} respondeu sem 'choices': {str(dados)[:500]}")
+        except urllib.error.HTTPError as e:
+            erro = RuntimeError(f"{base} respondeu {e.code}: {e.read().decode()[:500]}")
+            if e.code not in (429, 500, 502, 503, 504):
+                raise erro from None
+        except (urllib.error.URLError, TimeoutError) as e:
+            erro = RuntimeError(f"sem resposta de {base}: {e}")
+        time.sleep(2 * 2 ** tentativa)
+    else:
+        raise erro
     uso = dados.get("usage") or {}
     medidor.registrar(uso.get("prompt_tokens", 0), uso.get("completion_tokens", 0), time.perf_counter() - inicio)
     return _de_openai(dados)
@@ -217,23 +384,48 @@ def _texto_plano(sistema: str, mensagens: list) -> str:
     return "\n".join(partes)
 
 
-def _chamar_fake(mensagens, sistema, ferramentas) -> Resposta:
+def _args_fake(ferramenta: dict, pergunta: str, ids: list) -> dict:
+    """Preenche os parâmetros obrigatórios de uma ferramenta qualquer com valores plausíveis."""
+    if ferramenta["nome"] == "responder":
+        return {"desfecho": "responder", "fontes": ids[:1], "resposta": "(resposta simulada)"}
+    schema = ferramenta.get("parametros") or {}
+    args = {}
+    for nome in schema.get("required", []):
+        regra = schema.get("properties", {}).get(nome, {})
+        if "enum" in regra:
+            args[nome] = regra["enum"][0]
+        elif regra.get("type") == "array":
+            args[nome] = ids[:1]
+        elif regra.get("type") in ("integer", "number"):
+            args[nome] = regra.get("minimum", 1)
+        else:
+            args[nome] = pergunta[: regra.get("maxLength", 300)]
+    return args
+
+
+def _chamar_fake(mensagens, sistema, ferramentas, exigir_ferramenta=False) -> Resposta:
     """Simula o modelo sem chamar API nenhuma. Não mede nada real: só testa o encanamento."""
     texto_total = _texto_plano(sistema, mensagens)
-    ids = re.findall(r'id="([a-z0-9-]+)"', texto_total)
+    ids = re.findall(r'id="([a-z0-9-]+)"', texto_total) + re.findall(r'"id": "([a-z0-9-]+)"', texto_total)
     medidor.registrar(len(texto_total) // 4, 40, 0.01)
 
     if ferramentas:
+        por_nome = {f["nome"]: f for f in ferramentas}
         ja_buscou = any(
             isinstance(m["content"], list) and any(b.get("type") == "tool_result" for b in m["content"])
             for m in mensagens
         )
-        if not ja_buscou:
-            pergunta = mensagens[0]["content"]
-            chamada = Chamada("fake-1", "buscar", {"tema": "todos", "consulta": pergunta})
+        pergunta = mensagens[0]["content"] if isinstance(mensagens[0]["content"], str) else ""
+        busca = next((n for n in por_nome if n.startswith(("buscar", "consultar"))), None)
+        if isinstance(exigir_ferramenta, str):
+            alvo = exigir_ferramenta
+        elif busca and not ja_buscou:
+            alvo = busca
+        elif "responder" in por_nome:
+            alvo = "responder"
         else:
-            chamada = Chamada("fake-2", "responder", {"desfecho": "responder", "fontes": ids[:1],
-                                                      "resposta": "(resposta simulada)"})
+            alvo = next(iter(por_nome))
+        chamada = Chamada(f"fake-{len(mensagens)}", alvo, _args_fake(por_nome[alvo], pergunta, ids))
         conteudo = [{"type": "tool_use", "id": chamada.id, "name": chamada.nome, "input": chamada.args}]
         return Resposta("", [chamada], conteudo)
 
