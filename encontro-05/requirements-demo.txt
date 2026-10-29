@@ -1,0 +1,4 @@
+# Só para o notebook 03 (Langfuse). No Colab, a primeira célula instala sozinha.
+# Na véspera, rode o notebook e fixe aqui a versão que funcionou:
+#   pip freeze | grep -i "^langfuse=="
+langfuse>=5,<6

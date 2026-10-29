@@ -34,7 +34,7 @@ Duas ideias guiam as seis aulas:
 | 2 | Contexto e ferramentas | Que contrato o agente precisa? | Tool Contract Sheet | `encontro-02/` ✅ |
 | 3 | Recuperação como ferramenta | O que muda quando o agente decide se e quando buscar? | Nota de chunking (a busca entra no agente no Encontro 4) | `encontro-03/` ✅ |
 | 4 | Padrões e multi-agentes | Quando dividir melhora, e quando só encarece? | Nota de arquitetura (padrão, diagrama e placar) | `encontro-04/` ✅ |
-| 5 | Evals, observabilidade e custo | Como ganhar confiança para dar deploy? | Suíte de avaliação + painel | em breve |
+| 5 | Evals, observabilidade e custo | Como ganhar confiança para dar deploy? | Nota de avaliação (golden set do grupo, placar, SLOs e decisão de deploy) | `encontro-05/` ✅ |
 | 6 | Segurança, governança e produção | O que precisa ser verdade para ir à produção? | Análise de riscos + pitch | em breve |
 
 ## 2. O caso: Aurora Tecnologia
@@ -127,6 +127,7 @@ ai-agents-engineering/
 ├── encontro-02/                exercícios do Encontro 2
 ├── encontro-03/                notebooks do Encontro 3: busca, chunking e a wiki ampliada
 ├── encontro-04/                notebooks do Encontro 4, que rodam no Colab sem chave: multi-agentes
+├── encontro-05/                notebooks do Encontro 5, no Colab sem chave: evals, observabilidade e custo
 │
 └── referencia/
     └── langchain-basico.ipynb  apoio: os conceitos do Encontro 1 escritos em LangChain

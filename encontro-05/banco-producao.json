@@ -1,0 +1,98 @@
+[
+ {
+  "id": "B01",
+  "pergunta": "Quantos dias de licença eu tenho quando me casar?"
+ },
+ {
+  "id": "B02",
+  "pergunta": "Posso vender parte das minhas férias? Quantos dias?"
+ },
+ {
+  "id": "B03",
+  "pergunta": "Voltei de viagem ontem. Até quando preciso lançar as despesas?"
+ },
+ {
+  "id": "B04",
+  "pergunta": "Qual a diária máxima de hotel numa viagem para uma capital?"
+ },
+ {
+  "id": "B05",
+  "pergunta": "Levei um cliente para jantar e pedimos vinho. A bebida é reembolsada?"
+ },
+ {
+  "id": "B06",
+  "pergunta": "Esqueci de bater o ponto ontem. Até quando consigo ajustar?"
+ },
+ {
+  "id": "B07",
+  "pergunta": "Em quanto tempo preciso compensar as horas do banco de horas?"
+ },
+ {
+  "id": "B08",
+  "pergunta": "Apareceu o erro 720 na VPN. O que eu faço?"
+ },
+ {
+  "id": "B09",
+  "pergunta": "Perdi o celular que uso no segundo fator. E agora?"
+ },
+ {
+  "id": "B10",
+  "pergunta": "Quero instalar uma extensão no navegador. Preciso pedir para alguém?"
+ },
+ {
+  "id": "B11",
+  "pergunta": "De quanto em quanto tempo a minha senha expira?"
+ },
+ {
+  "id": "B12",
+  "pergunta": "Quanto custa colocar meu filho no plano odontológico?"
+ },
+ {
+  "id": "B13",
+  "pergunta": "Meu filho nasceu há 40 dias. Ainda dá para incluir ele no plano de saúde sem carência?"
+ },
+ {
+  "id": "B14",
+  "pergunta": "Por quanto tempo um ex-colaborador pode manter o plano de saúde?"
+ },
+ {
+  "id": "B15",
+  "pergunta": "Posso trocar a categoria do meu plano de saúde agora em junho?"
+ },
+ {
+  "id": "B16",
+  "pergunta": "Qual o valor do auxílio-creche?"
+ },
+ {
+  "id": "B17",
+  "pergunta": "Posso trabalhar duas semanas de Portugal?"
+ },
+ {
+  "id": "B18",
+  "pergunta": "Qual o horário do refeitório do escritório?"
+ },
+ {
+  "id": "B19",
+  "pergunta": "A empresa paga bônus de fim de ano?"
+ },
+ {
+  "id": "B20",
+  "pergunta": "Um fornecedor quer me dar um vinho de R$ 350. Posso aceitar?"
+ },
+ {
+  "id": "B21",
+  "pergunta": "Se eu pedir demissão, quanto tempo de aviso prévio tenho que cumprir?"
+ },
+ {
+  "id": "B22",
+  "pergunta": "Sou contratado como PJ. Tenho direito ao vale-refeição?"
+ },
+ {
+  "id": "B23",
+  "pergunta": "Valeu pela ajuda, até mais!"
+ },
+ {
+  "id": "B24",
+  "pergunta": "Quando abre a autoavaliação de desempenho e quando sai o resultado do mérito?"
+ }
+]

@@ -9,3 +9,6 @@ chromadb>=0.5
 sentence-transformers>=3.0
 rank-bm25>=0.2.2
 jupyter
+
+# Encontro 5 · gráficos dos notebooks (o Colab já tem)
+matplotlib>=3.8

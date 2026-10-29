@@ -1,0 +1,437 @@
+[
+ {
+  "id": "N1",
+  "categoria": "normal",
+  "pergunta": "Quantos dias de licença-paternidade eu tenho?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-licencas"
+   ]
+  },
+  "resposta_contem_algum": [
+   "20 dias",
+   "vinte dias"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "N2",
+  "categoria": "normal",
+  "pergunta": "Com quanta antecedência preciso pedir minhas férias?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-ferias"
+   ]
+  },
+  "resposta_contem_algum": [
+   "30 dias",
+   "trinta dias"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "N4",
+  "categoria": "normal",
+  "pergunta": "Em quanto tempo a TI conserta ou repõe um notebook quebrado?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "ti-equipamentos"
+   ]
+  },
+  "resposta_contem_algum": [
+   "5 dias úteis",
+   "cinco dias úteis"
+  ],
+  "rota": [
+   "wiki-ti"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "N7",
+  "categoria": "normal",
+  "pergunta": "Quantas sessões de terapia a empresa paga?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "beneficios-bem-estar"
+   ]
+  },
+  "resposta_contem_algum": [
+   "8 sessões",
+   "oito sessões"
+  ],
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "E1",
+  "categoria": "excecao",
+  "pergunta": "Qual o limite diário de alimentação numa viagem com pernoite em Brasília?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "fin-viagens-e-reembolso"
+   ]
+  },
+  "resposta_contem_algum": [
+   "160"
+  ],
+  "rota": [
+   "wiki-financeiro"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "E2",
+  "categoria": "excecao",
+  "pergunta": "Até quanto posso gastar por dia com comida numa viagem a trabalho para São Paulo?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "fin-viagens-e-reembolso"
+   ]
+  },
+  "resposta_contem_algum": [
+   "160"
+  ],
+  "rota": [
+   "wiki-financeiro"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "C1",
+  "categoria": "conflito",
+  "pergunta": "Quantos dias de home office posso fazer por semana?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-trabalho-remoto"
+   ]
+  },
+  "resposta_contem_algum": [
+   "3 dias",
+   "três dias"
+  ],
+  "resposta_nao_contem": [
+   "2 dias",
+   "dois dias"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "C2",
+  "categoria": "conflito",
+  "pergunta": "Qual o valor do auxílio home office?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-trabalho-remoto"
+   ]
+  },
+  "resposta_contem_algum": [
+   "120"
+  ],
+  "resposta_nao_contem": [
+   "R$ 80"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "T1",
+  "categoria": "termo-exato",
+  "pergunta": "Estou com o erro 809 na VPN, o que eu faço?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "ti-vpn-codigos-de-erro"
+   ]
+  },
+  "resposta_contem_algum": [
+   "TCP 443"
+  ],
+  "rota": [
+   "wiki-ti"
+  ],
+  "origem": "Encontros 1 a 4",
+  "termo_exato": "809"
+ },
+ {
+  "id": "T2",
+  "categoria": "termo-exato",
+  "pergunta": "Qual o reembolso de consulta fora da rede na categoria AUR-S2?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "beneficios-plano-de-saude"
+   ]
+  },
+  "resposta_contem_algum": [
+   "150"
+  ],
+  "resposta_nao_contem": [
+   "300"
+  ],
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "Encontros 1 a 4",
+  "termo_exato": "AUR-S2"
+ },
+ {
+  "id": "A1",
+  "categoria": "autoridade",
+  "pergunta": "Qual é o valor do vale-refeição por dia?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "beneficios-vale-refeicao"
+   ]
+  },
+  "resposta_contem_algum": [
+   "45"
+  ],
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "S1",
+  "categoria": "sem-resposta",
+  "pergunta": "A Aurora oferece previdência privada?",
+  "esperado": {
+   "desfecho": "nao_sei",
+   "fontes_obrigatorias": []
+  },
+  "rota": null,
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "S2",
+  "categoria": "sem-resposta",
+  "pergunta": "Qual é a política de estacionamento do escritório?",
+  "esperado": {
+   "desfecho": "nao_sei",
+   "fontes_obrigatorias": []
+  },
+  "rota": null,
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "X1",
+  "categoria": "escalar",
+  "pergunta": "Tenho um filho de 4 anos. Tenho direito ao auxílio-creche?",
+  "esperado": {
+   "desfecho": "escalar",
+   "fontes_obrigatorias": []
+  },
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "P1",
+  "categoria": "sem-busca",
+  "pergunta": "Bom dia! Você consegue me ajudar com dúvidas de RH e TI?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": []
+  },
+  "rota": [],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "P2",
+  "categoria": "sem-busca",
+  "pergunta": "Obrigado, era isso mesmo que eu precisava!",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": []
+  },
+  "rota": [],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "R1",
+  "categoria": "duas-areas",
+  "pergunta": "Vou viajar a trabalho para o Rio, com pernoite. Qual o meu limite diário de alimentação? E se a VPN não conectar no Wi-Fi do hotel, o que eu faço?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "fin-viagens-e-reembolso",
+    "ti-vpn-e-acesso-remoto"
+   ]
+  },
+  "resposta_contem_algum": [
+   "160"
+  ],
+  "rota": [
+   "wiki-financeiro",
+   "wiki-ti"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "R2",
+  "categoria": "rota-enganosa",
+  "pergunta": "Trabalho de casa três dias por semana. A empresa me ajuda a pagar a internet?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-trabalho-remoto"
+   ]
+  },
+  "resposta_contem_algum": [
+   "120"
+  ],
+  "resposta_nao_contem": [
+   "R$ 80"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "R3",
+  "categoria": "rota-enganosa",
+  "pergunta": "Fui de carro próprio visitar um cliente. Quanto recebo de reembolso por km rodado?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "fin-viagens-e-reembolso"
+   ]
+  },
+  "resposta_contem_algum": [
+   "1,20",
+   "1.20"
+  ],
+  "rota": [
+   "wiki-financeiro"
+  ],
+  "origem": "Encontros 1 a 4"
+ },
+ {
+  "id": "G1",
+  "categoria": "parafrase",
+  "pergunta": "Meu filho nasceu ontem! Quantos dias posso ficar em casa com ele?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-licencas"
+   ]
+  },
+  "resposta_contem_algum": [
+   "20 dias",
+   "vinte dias"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "traces da primeira semana"
+ },
+ {
+  "id": "G2",
+  "categoria": "negativa",
+  "pergunta": "Posso dividir minhas férias em quatro períodos?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "rh-ferias"
+   ]
+  },
+  "resposta_contem_algum": [
+   "três períodos",
+   "3 períodos",
+   "três"
+  ],
+  "rota": [
+   "wiki-rh"
+  ],
+  "origem": "traces da primeira semana"
+ },
+ {
+  "id": "G3",
+  "categoria": "normal",
+  "pergunta": "Depois de quantas senhas erradas a minha conta é bloqueada?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "ti-senhas-e-acesso"
+   ]
+  },
+  "resposta_contem_algum": [
+   "5 tentativas",
+   "cinco tentativas"
+  ],
+  "rota": [
+   "wiki-ti"
+  ],
+  "origem": "traces da primeira semana"
+ },
+ {
+  "id": "G4",
+  "categoria": "autoridade",
+  "pergunta": "Acabei de entrar na Aurora. Quanto vou receber de vale-refeição por dia?",
+  "esperado": {
+   "desfecho": "responder",
+   "fontes_obrigatorias": [
+    "beneficios-vale-refeicao"
+   ]
+  },
+  "resposta_contem_algum": [
+   "45"
+  ],
+  "resposta_nao_contem": [
+   "42"
+  ],
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "traces da primeira semana"
+ },
+ {
+  "id": "G5",
+  "categoria": "sem-resposta",
+  "pergunta": "A Aurora paga curso de inglês para os colaboradores?",
+  "esperado": {
+   "desfecho": "nao_sei",
+   "fontes_obrigatorias": []
+  },
+  "rota": null,
+  "origem": "traces da primeira semana"
+ },
+ {
+  "id": "G6",
+  "categoria": "escalar",
+  "pergunta": "Saí da Aurora mês passado, depois de três anos. Tenho direito a continuar no plano de saúde?",
+  "esperado": {
+   "desfecho": "escalar",
+   "fontes_obrigatorias": []
+  },
+  "rota": [
+   "wiki-beneficios"
+  ],
+  "origem": "traces da primeira semana"
+ }
+]
