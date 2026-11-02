@@ -1,7 +1,6 @@
 # AI Agents Engineering
 
-**MBA Engenharia de Software Moderna: Arquitetura, Plataformas & IA · FIAP**
-Módulo 7 · AI Native Engineering
+**MBA Engenharia de Software Moderna: Arquitetura, Plataformas & IA**
 
 Repositório prático da disciplina. Aqui ficam o código de apoio, os exercícios de cada encontro e o projeto que a sua equipe vai construir ao longo das seis aulas.
 
@@ -35,7 +34,7 @@ Duas ideias guiam as seis aulas:
 | 3 | Recuperação como ferramenta | O que muda quando o agente decide se e quando buscar? | Nota de chunking (a busca entra no agente no Encontro 4) | `encontro-03/` ✅ |
 | 4 | Padrões e multi-agentes | Quando dividir melhora, e quando só encarece? | Nota de arquitetura (padrão, diagrama e placar) | `encontro-04/` ✅ |
 | 5 | Evals, observabilidade e custo | Como ganhar confiança para dar deploy? | Nota de avaliação (golden set do grupo, placar, SLOs e decisão de deploy) | `encontro-05/` ✅ |
-| 6 | Segurança, governança e produção | O que precisa ser verdade para ir à produção? | Análise de riscos + pitch | em breve |
+| 6 | Oficina: segurança, governança e produção | O que precisa ser verdade para ir à produção? | O agente do grupo + registro de decisões | `encontro-06/` ✅ |
 
 ## 2. O caso: Aurora Tecnologia
 
