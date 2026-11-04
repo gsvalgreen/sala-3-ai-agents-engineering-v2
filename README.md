@@ -1,6 +1,7 @@
 # AI Agents Engineering
 
-**MBA Engenharia de Software Moderna: Arquitetura, Plataformas & IA**
+**MBA Engenharia de Software Moderna: Arquitetura, Plataformas & IA · FIAP**
+Módulo 7 · AI Native Engineering
 
 Repositório prático da disciplina. Aqui ficam o código de apoio, os exercícios de cada encontro e o projeto que a sua equipe vai construir ao longo das seis aulas.
 
